@@ -1,0 +1,1091 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMPACGO Plan</title>
+<style>
+:root{
+  --navy-950:#141b2d; --navy-900:#182234; --navy-800:#1f2b42; --navy-700:#28365294;
+  --blue-600:#3b6fef; --blue-500:#4f7bf5; --blue-100:#e4ecff; --blue-50:#eef3ff;
+  --bg:#f3f5fa; --card:#ffffff; --border:#e6e9f2; --text:#1c2434; --text-soft:#5b6478; --text-faint:#8a91a3;
+  --green:#17a673; --green-bg:#e3f8ef; --amber:#e8a325; --amber-bg:#fdf1dc; --red:#e6493f; --red-bg:#fbe6e4;
+  --purple:#7c5cfc; --purple-bg:#ede9ff; --teal:#14b8a6; --teal-bg:#dcfaf5; --pink:#ec5a9d; --pink-bg:#fce6f1;
+  --cyan:#0ea5c4; --cyan-bg:#dff4f9;
+  --radius:12px; --radius-sm:8px;
+  --shadow:0 1px 2px rgba(20,27,45,.04), 0 8px 24px -12px rgba(20,27,45,.10);
+  color-scheme: light;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;}
+::-webkit-scrollbar{width:9px;height:9px;}
+::-webkit-scrollbar-thumb{background:#00000022;border-radius:6px;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;}
+svg{display:block;}
+.icon{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+
+.app{display:flex;min-height:100vh;}
+.sidebar{width:254px;flex:none;background:linear-gradient(190deg,var(--navy-900),var(--navy-950));color:#c9cfdd;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;transition:width .15s;}
+.sidebar.collapsed{width:70px;}
+.sidebar.collapsed .nav-item span, .sidebar.collapsed .nav-group-label, .sidebar.collapsed .sidebar-tenant, .sidebar.collapsed .sidebar-brand b, .sidebar.collapsed .nav-item .count, .sidebar.collapsed .sidebar-user .u-name, .sidebar.collapsed .sidebar-user .u-role, .sidebar.collapsed .logout-item span{display:none;}
+.sidebar-brand{display:flex;align-items:center;gap:10px;padding:20px 18px 16px;color:#fff;font-weight:700;font-size:15px;letter-spacing:.2px;cursor:pointer;}
+.sidebar-brand .brand-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--blue-600),#6a5cf7);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex:none;}
+.sidebar-tenant{margin:0 14px 14px;padding:10px 12px;background:#ffffff0d;border:1px solid #ffffff14;border-radius:10px;font-size:12px;color:#9aa3ba;}
+.sidebar-tenant b{display:block;color:#e7eaf3;font-size:13px;font-weight:600;margin-bottom:1px;}
+.nav-scroll{flex:1;padding:4px 10px 14px;}
+.nav-group-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#6b7690;font-weight:700;margin:16px 12px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:13.3px;font-weight:500;color:#aab1c6;cursor:pointer;margin-bottom:1px;position:relative;}
+.nav-item .icon{width:16px;height:16px;opacity:.85;flex:none;}
+.nav-item:hover{background:#ffffff0d;color:#e7eaf3;}
+.nav-item.active{background:var(--blue-600);color:#fff;box-shadow:0 4px 14px -4px #3b6fef88;}
+.nav-item.active .icon{opacity:1;}
+.nav-item .count{margin-left:auto;font-size:11px;background:#ffffff1a;padding:1px 6px;border-radius:20px;color:#dfe3ee;}
+.nav-item.active .count{background:#ffffff2e;color:#fff;}
+.sidebar-foot{padding:12px 14px 16px;border-top:1px solid #ffffff14;}
+.sidebar-user{display:flex;align-items:center;gap:9px;padding:8px;border-radius:10px;cursor:pointer;}
+.sidebar-user:hover{background:#ffffff0d;}
+.sidebar-user .avatar{width:32px;height:32px;flex:none;}
+.sidebar-user .u-name{font-size:12.5px;font-weight:600;color:#e7eaf3;}
+.sidebar-user .u-role{font-size:11px;color:#8a91ac;}
+.logout-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;color:#aab1c6;font-size:13px;font-weight:500;cursor:pointer;margin-top:4px;}
+.logout-item:hover{background:#ffffff0d;color:#fff;}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column;height:100vh;overflow-y:auto;}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:10px 24px;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.topbar-search{flex:1;max-width:380px;min-width:160px;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text-faint);}
+.topbar-search input{border:none;background:none;outline:none;font-size:13px;color:var(--text);width:100%;font-family:inherit;}
+.topbar-actions{display:flex;align-items:center;gap:10px;margin-left:auto;}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text-soft);position:relative;flex:none;}
+.icon-btn:hover{background:var(--bg);}
+.icon-btn .dot{position:absolute;top:7px;right:7px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--card);}
+.switcher{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:10px;padding:6px 10px 6px 10px;cursor:pointer;background:var(--card);}
+.switcher select{border:none;background:none;font-size:12.3px;font-weight:600;color:var(--text);outline:none;font-family:inherit;max-width:170px;}
+.switcher .swlabel{font-size:10px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;}
+.topbar-profile{display:flex;align-items:center;gap:9px;padding:5px 10px 5px 5px;border-radius:10px;cursor:pointer;border:1px solid var(--border);flex:none;}
+.topbar-profile:hover{background:var(--bg);}
+.crumbs{font-size:12px;color:var(--text-faint);margin-bottom:6px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.crumbs a:hover{color:var(--blue-600);}
+
+.page{padding:20px 26px 60px;max-width:1440px;}
+.view{display:none;}
+.view.active{display:block;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:18px;flex-wrap:wrap;}
+.page-title{font-size:21px;font-weight:700;color:var(--text);letter-spacing:-.2px;margin:0;}
+.page-sub{font-size:13px;color:var(--text-soft);margin-top:3px;max-width:840px;}
+.page-actions{display:flex;gap:10px;flex:none;flex-wrap:wrap;}
+
+.btn{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:600;padding:9px 15px;border-radius:9px;border:1px solid transparent;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.btn .icon{width:15px;height:15px;}
+.btn-primary{background:var(--blue-600);color:#fff;}
+.btn-primary:hover{background:#3160d6;}
+.btn-secondary{background:var(--card);color:var(--text);border-color:var(--border);}
+.btn-secondary:hover{background:var(--bg);}
+.btn-ghost{background:transparent;color:var(--text-soft);}
+.btn-ghost:hover{background:var(--bg);}
+.btn-sm{padding:6px 11px;font-size:12.3px;border-radius:7px;}
+.btn-danger{background:var(--red-bg);color:var(--red);}
+.btn-danger:hover{background:#f6d3d0;}
+.btn:disabled{opacity:.5;cursor:not-allowed;}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);}
+.card-pad{padding:18px 20px;}
+.card-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border);}
+.card-head h3{font-size:14.5px;font-weight:700;margin:0;}
+.card-head .hint{font-size:12px;color:var(--text-faint);}
+.grid{display:grid;gap:16px;}
+.g-2{grid-template-columns:repeat(2,1fr);}
+.g-3{grid-template-columns:repeat(3,1fr);}
+.g-4{grid-template-columns:repeat(4,1fr);}
+.g-5{grid-template-columns:repeat(5,1fr);}
+.g-6{grid-template-columns:repeat(6,1fr);}
+.g-7{grid-template-columns:repeat(7,1fr);}
+@media (max-width:1200px){.g-6{grid-template-columns:repeat(3,1fr);}.g-5{grid-template-columns:repeat(3,1fr);}.g-4{grid-template-columns:repeat(2,1fr);}.g-7{grid-template-columns:repeat(4,1fr);}}
+
+.mod-card{display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);cursor:pointer;transition:transform .12s, box-shadow .12s;}
+.mod-card:hover{transform:translateY(-2px);box-shadow:0 14px 28px -14px rgba(20,27,45,.22);}
+.mod-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.mod-title{font-size:13.5px;font-weight:700;}
+
+.table-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border);background:var(--card);}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px;}
+thead th{background:var(--navy-900);color:#fff;text-align:left;padding:11px 14px;font-size:11.3px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:var(--bg);}
+.row-click{cursor:pointer;}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;}
+.cell-ent{display:flex;align-items:center;gap:10px;}
+.cell-ent .meta{display:flex;flex-direction:column;}
+.cell-ent .meta b{font-size:13px;font-weight:600;}
+.cell-ent .meta span{font-size:11.5px;color:var(--text-faint);}
+.table-toolbar{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.table-toolbar .grow{flex:1;}
+.search-input{display:flex;align-items:center;gap:7px;border:1px solid var(--border);border-radius:8px;padding:7px 10px;background:var(--bg);min-width:190px;}
+.search-input input{border:none;background:none;outline:none;font-size:12.8px;width:100%;color:var(--text);font-family:inherit;}
+.search-input .icon{width:14px;height:14px;color:var(--text-faint);}
+.select-filter{border:1px solid var(--border);border-radius:8px;padding:7px 10px;background:var(--card);font-size:12.6px;color:var(--text-soft);font-family:inherit;}
+.pager{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;font-size:12px;color:var(--text-faint);flex-wrap:wrap;gap:8px;}
+.pager .pgbtn{display:flex;gap:6px;}
+.pager button{border:1px solid var(--border);background:var(--card);border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;color:var(--text-soft);}
+
+.avatar{width:36px;height:36px;border-radius:10px;background:var(--blue-100);color:var(--blue-600);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex:none;}
+.avatar.round{border-radius:50%;}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11.3px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+.b-green{color:var(--green);background:var(--green-bg);}
+.b-amber{color:var(--amber);background:var(--amber-bg);}
+.b-red{color:var(--red);background:var(--red-bg);}
+.b-blue{color:var(--blue-600);background:var(--blue-50);}
+.b-purple{color:var(--purple);background:var(--purple-bg);}
+.b-teal{color:var(--teal);background:var(--teal-bg);}
+.b-gray{color:var(--text-soft);background:var(--bg);}
+.chip{display:inline-flex;align-items:center;font-size:11.5px;font-weight:600;padding:3px 9px;border-radius:7px;background:var(--bg);color:var(--text-soft);border:1px solid var(--border);}
+
+.tabbar{display:flex;gap:4px;border-bottom:1px solid var(--border);margin-bottom:18px;overflow-x:auto;}
+.tabbtn{padding:10px 4px;margin-right:22px;font-size:13px;font-weight:600;color:var(--text-faint);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;}
+.tabbtn.active{color:var(--blue-600);border-color:var(--blue-600);}
+.tabpanel{display:none;}
+.tabpanel.active{display:block;}
+
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media (max-width:1000px){.form-grid{grid-template-columns:repeat(2,1fr);}}
+.field{display:flex;flex-direction:column;gap:6px;}
+.field.full{grid-column:1/-1;}
+.field.c2{grid-column:span 2;}
+.field label{font-size:12px;font-weight:600;color:var(--text-soft);}
+.field input,.field select,.field textarea{border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-size:13px;background:var(--card);color:var(--text);outline:none;font-family:inherit;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue-600);box-shadow:0 0 0 3px var(--blue-50);}
+.field .hint{font-size:11px;color:var(--text-faint);}
+
+.acc{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--card);cursor:pointer;font-size:13.3px;font-weight:700;}
+.acc-head .icon{width:15px;height:15px;color:var(--text-faint);transition:transform .15s;}
+.acc.open .acc-head .icon{transform:rotate(180deg);}
+.acc-body{display:none;padding:4px 18px 16px;}
+.acc.open .acc-body{display:block;}
+.kv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 22px;}
+@media (max-width:1000px){.kv-grid{grid-template-columns:repeat(2,1fr);}}
+.kv{display:flex;flex-direction:column;gap:2px;}
+.kv label{font-size:11px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.03em;}
+.kv b{font-size:13.3px;font-weight:600;}
+
+.stepper{display:flex;flex-direction:column;}
+.step{display:flex;gap:14px;position:relative;padding-bottom:22px;}
+.step:last-child{padding-bottom:0;}
+.step-dot{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:none;font-size:13px;font-weight:700;z-index:1;}
+.step-line{position:absolute;left:14.5px;top:30px;bottom:0;width:2px;background:var(--border);}
+.step.done .step-dot{background:var(--green);color:#fff;}
+.step.done .step-line{background:var(--green);}
+.step.active .step-dot{background:var(--blue-600);color:#fff;box-shadow:0 0 0 4px var(--blue-50);}
+.step.pending .step-dot{background:var(--bg);color:var(--text-faint);border:1.5px dashed var(--border);}
+.step-body b{display:block;font-size:13px;font-weight:700;}
+.step-body span{font-size:12px;color:var(--text-faint);}
+
+.activity{display:flex;gap:11px;padding:11px 0;border-bottom:1px solid var(--border);}
+.activity:last-child{border-bottom:none;}
+.activity .a-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex:none;}
+.activity .a-icon .icon{width:14px;height:14px;}
+.activity b{font-size:12.7px;font-weight:600;}
+.activity span{font-size:11.5px;color:var(--text-faint);}
+.comment{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.comment:last-child{border-bottom:none;}
+.comment .c-body{flex:1;background:var(--bg);border-radius:10px;padding:9px 12px;}
+.comment b{font-size:12.5px;}
+.comment span{font-size:11px;color:var(--text-faint);}
+.comment p{margin:4px 0 0;font-size:12.6px;}
+.attach-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:9px;margin-bottom:8px;}
+.attach-row .a-ico{width:32px;height:32px;border-radius:8px;background:var(--blue-50);color:var(--blue-600);display:flex;align-items:center;justify-content:center;flex:none;}
+.attach-row b{font-size:12.6px;display:block;}
+.attach-row span{font-size:11px;color:var(--text-faint);}
+
+.bars{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:10px;}
+.bars .bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end;}
+.bars .bar{width:100%;max-width:30px;border-radius:6px 6px 3px 3px;background:var(--blue-600);position:relative;}
+.bars .bar.alt{background:var(--blue-100);}
+.bars .lbl{font-size:11px;color:var(--text-faint);}
+.progress{height:7px;border-radius:20px;background:var(--bg);overflow:hidden;}
+.progress > span{display:block;height:100%;border-radius:20px;background:var(--blue-600);}
+.progress > span.warn{background:var(--amber);}
+.progress > span.bad{background:var(--red);}
+.legend-row{display:flex;align-items:center;gap:8px;font-size:12.3px;}
+.legend-row .sw{width:9px;height:9px;border-radius:3px;flex:none;}
+.stat-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.perm-pill{display:inline-flex;align-items:center;justify-content:center;width:26px;height:22px;border-radius:6px;font-size:11px;font-weight:800;}
+
+.hstack{display:flex;align-items:center;gap:10px;}
+.muted{color:var(--text-faint);}
+.mt-0{margin-top:0;}
+.section-title{font-size:15px;font-weight:700;margin:26px 0 12px;}
+.section-title:first-child{margin-top:0;}
+.two-col{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;}
+@media (max-width:1100px){.two-col{grid-template-columns:1fr;}}
+.empty{padding:40px 20px;text-align:center;color:var(--text-faint);font-size:13px;}
+
+/* calendar */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;}
+.cal-day{border:1px solid var(--border);border-radius:10px;padding:8px;min-height:92px;background:var(--card);}
+.cal-day .dnum{font-size:11.5px;font-weight:700;color:var(--text-faint);margin-bottom:6px;}
+.cal-day.today{border-color:var(--blue-600);box-shadow:0 0 0 2px var(--blue-50);}
+.cal-evt{font-size:10.8px;padding:3px 6px;border-radius:6px;margin-bottom:3px;background:var(--blue-50);color:var(--blue-600);font-weight:600;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cal-evt.warn{background:var(--amber-bg);color:var(--amber);}
+.cal-evt.crit{background:var(--red-bg);color:var(--red);}
+.cal-dow{font-size:11px;font-weight:700;color:var(--text-faint);text-align:center;text-transform:uppercase;letter-spacing:.04em;padding-bottom:4px;}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(12,16,26,.55);display:flex;align-items:center;justify-content:center;z-index:200;padding:24px;}
+.modal-overlay.hidden{display:none;}
+.modal-box{background:var(--card);border-radius:14px;max-width:800px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 30px 70px -20px rgba(0,0,0,.4);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);}
+.modal-head h3{margin:0;font-size:15px;font-weight:700;}
+.modal-body{padding:20px 22px;}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--card);}
+
+.drawer-overlay{position:fixed;inset:0;background:rgba(12,16,26,.4);z-index:210;display:flex;justify-content:flex-end;}
+.drawer-overlay.hidden{display:none;}
+.drawer-box{background:var(--card);width:540px;max-width:92vw;height:100vh;overflow-y:auto;box-shadow:-20px 0 50px -20px rgba(0,0,0,.35);animation:slideIn .18s ease;}
+@keyframes slideIn{from{transform:translateX(24px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.drawer-head{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:2;}
+.drawer-head h3{margin:0 0 3px;font-size:16px;font-weight:700;}
+.drawer-head span{font-size:12px;color:var(--text-faint);}
+.drawer-body{padding:18px 22px 60px;}
+.drawer-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--card);}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar"></aside>
+  <div class="main">
+    <div class="topbar" id="topbar"></div>
+    <div id="view-root"></div>
+  </div>
+</div>
+<div class="modal-overlay hidden" id="modal-root" onclick="if(event.target===this)closeModal();"></div>
+<div class="drawer-overlay hidden" id="drawer-root" onclick="if(event.target===this)closeDrawer();"></div>
+<script>
+/* ============================= ICONS ============================= */
+const ICONS = {
+  grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
+  trend:'<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+  layers:'<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
+  box:'<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+  calendar:'<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+  cpu:'<rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="1" y1="15" x2="4" y2="15"/><line x1="20" y1="15" x2="23" y2="15"/>',
+  truck:'<rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/>',
+  clipboard:'<path d="M9 2h6a1 1 0 0 1 1 1v2H8V3a1 1 0 0 1 1-1z"/><rect x="4" y="4" width="16" height="18" rx="2"/><path d="M9 12h6"/><path d="M9 16h6"/>',
+  clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  alerttri:'<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+  bars:'<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+  gear:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  search:'<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+  bell:'<path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  chevdown:'<polyline points="6 9 12 15 18 9"/>',
+  chevright:'<polyline points="9 18 15 12 9 6"/>',
+  chevleft:'<polyline points="15 18 9 12 15 6"/>',
+  logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>',
+  plus:'<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>',
+  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  filter:'<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
+  edit:'<path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/>',
+  trash:'<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+  eye:'<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+  check:'<polyline points="20 6 9 17 4 12"/>',
+  x:'<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  upload:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+  refresh:'<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  file:'<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/>',
+  msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  more:'<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>',
+  users:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+  flag:'<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>',
+  sun:'<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>'
+};
+function ic(name, cls){ return '<svg class="icon '+(cls||'')+'" viewBox="0 0 24 24">'+(ICONS[name]||'')+'</svg>'; }
+function esc(s){ return String(s==null?'':s); }
+function fmtINR(n){ n=Number(n); const neg=n<0; n=Math.abs(n); const s='₹'+n.toLocaleString('en-IN',{maximumFractionDigits:0}); return neg?'('+s+')':s; }
+function fmtNum(n){ return Number(n).toLocaleString('en-IN'); }
+function initials(name){ return name.split(' ').map(function(p){return p[0];}).slice(0,2).join('').toUpperCase(); }
+let toastTimer;
+function toast(msg){
+  let t=document.getElementById('toast');
+  if(!t){ t=document.createElement('div'); t.id='toast'; t.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy-900);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;box-shadow:0 12px 32px -8px rgba(0,0,0,.35);z-index:999;max-width:480px;text-align:center;'; document.body.appendChild(t); }
+  t.textContent=msg; t.style.opacity='1';
+  clearTimeout(toastTimer); toastTimer=setTimeout(function(){ t.style.transition='opacity .4s'; t.style.opacity='0'; },3000);
+}
+/* ============================= NAV ============================= */
+const NAV = [
+  { items:[ {id:'workspace', label:'Planning Workspace', icon:'grid'} ] },
+  { group:'Demand', items:[
+    {id:'demand', label:'Demand Forecasting', icon:'trend'}
+  ]},
+  { group:'Supply Planning', items:[
+    {id:'mrp', label:'Material Requirement Planning', icon:'layers', count:6},
+    {id:'mps', label:'Master Production Scheduling', icon:'clipboard'},
+    {id:'capacity', label:'Capacity Planning', icon:'cpu'},
+    {id:'procurement', label:'Procurement Planning', icon:'truck'}
+  ]},
+  { group:'Scheduling', items:[
+    {id:'scheduling', label:'Production Scheduling', icon:'calendar'},
+    {id:'plancal', label:'Planning Calendar', icon:'calendar'}
+  ]},
+  { group:'Control', items:[
+    {id:'exceptions', label:'Exception Management', icon:'alerttri', count:5}
+  ]},
+  { group:'Insights', items:[
+    {id:'reports', label:'Planning Reports', icon:'bars'}
+  ]},
+  { group:'System', items:[ {id:'admin', label:'Administration', icon:'gear'} ] }
+];
+const COMPANIES = ['IMPACGO Manufacturing Pvt Ltd','IMPACGO Precision Components Inc','IMPACGO Auto Parts FZE'];
+let CURRENT_COMPANY = COMPANIES[0];
+const PLANTS = ['Bengaluru Plant 1 (Machining)','Pune Plant 2 (Assembly)','Chennai Plant 3 (Sheet Metal)','Austin Plant (US Assembly)'];
+
+/* ============================= ITEMS MASTER ============================= */
+const ITEMS = [
+  {code:'RM-1001', name:'Mild Steel Sheet 2mm', type:'Raw Material', uom:'KG', stock:12400, rate:62, leadTime:7},
+  {code:'RM-1002', name:'Aluminium Billet 6061', type:'Raw Material', uom:'KG', stock:3200, rate:280, leadTime:14},
+  {code:'RM-1005', name:'Stainless Steel Rod SS304', type:'Raw Material', uom:'KG', stock:2100, rate:210, leadTime:10},
+  {code:'RM-1006', name:'Rubber Gasket Sheet', type:'Raw Material', uom:'SHEET', stock:640, rate:180, leadTime:5},
+  {code:'CP-2001', name:'Bearing 6205-2RS', type:'Component', uom:'PCS', stock:1840, rate:95, leadTime:12},
+  {code:'CP-2002', name:'M8 Hex Bolt (Set of 100)', type:'Component', uom:'SET', stock:420, rate:220, leadTime:6},
+  {code:'CP-2003', name:'DC Motor 12V 150W', type:'Component', uom:'PCS', stock:360, rate:1450, leadTime:21},
+  {code:'CP-2004', name:'PCB Control Board Rev C', type:'Component', uom:'PCS', stock:520, rate:890, leadTime:18},
+  {code:'FG-4001', name:'Industrial Blower Unit — Model IB-200', type:'Finished Good', uom:'PCS', stock:64, rate:18500, leadTime:5},
+  {code:'FG-4002', name:'Conveyor Motor Drive — Model CMD-500', type:'Finished Good', uom:'PCS', stock:38, rate:24800, leadTime:7},
+  {code:'FG-4003', name:'Precision Gearbox Unit — Model PG-100', type:'Finished Good', uom:'PCS', stock:52, rate:15600, leadTime:5},
+  {code:'FG-4004', name:'Hydraulic Actuator — Model HA-750', type:'Finished Good', uom:'PCS', stock:29, rate:32400, leadTime:9}
+];
+function itemByCode(c){ return ITEMS.find(function(i){return i.code===c;}); }
+const VENDORS = [
+  {code:'VEN-01', name:'Bluewave Components Pvt Ltd', category:'Raw Material Suppliers', rating:4.6, onTimePct:94, leadTime:7},
+  {code:'VEN-02', name:'Greenfield Packaging Ltd', category:'Raw Material Suppliers', rating:4.2, onTimePct:88, leadTime:9},
+  {code:'VEN-03', name:'Quantum IT Services', category:'Electronics & Controls', rating:4.5, onTimePct:91, leadTime:18},
+  {code:'VEN-04', name:'Cedar Office Supplies', category:'Facility & Admin', rating:4.0, onTimePct:85, leadTime:5},
+  {code:'VEN-05', name:'Precision Bearings Co.', category:'Components', rating:4.7, onTimePct:96, leadTime:12},
+  {code:'VEN-06', name:'Alloy Metals Traders', category:'Raw Material Suppliers', rating:4.3, onTimePct:89, leadTime:14}
+];
+/* ============================= DEMAND FORECASTING ============================= */
+const FORECAST_MODELS = [
+  {name:'Moving Average (3-Month)', type:'Statistical', accuracy:82, usedFor:'Fast-moving finished goods', status:'Active'},
+  {name:'Exponential Smoothing', type:'Statistical', accuracy:87, usedFor:'Seasonal finished goods', status:'Active'},
+  {name:'Linear Regression — Trend', type:'Statistical', accuracy:79, usedFor:'Steady growth items', status:'Active'},
+  {name:'Sales Rep Manual Override', type:'Judgmental', accuracy:71, usedFor:'New product launches', status:'Active'},
+  {name:'Seasonal Index Model', type:'Statistical', accuracy:85, usedFor:'Weather-driven demand items', status:'Active'}
+];
+const SALES_FORECAST = [
+  {item:'FG-4001', name:'Industrial Blower Unit — Model IB-200', month:'Jul 2026', forecastQty:45, actualLastMonth:38, confidence:'High', status:'Approved'},
+  {item:'FG-4002', name:'Conveyor Motor Drive — Model CMD-500', month:'Jul 2026', forecastQty:26, actualLastMonth:22, confidence:'Medium', status:'Approved'},
+  {item:'FG-4003', name:'Precision Gearbox Unit — Model PG-100', month:'Jul 2026', forecastQty:38, actualLastMonth:35, confidence:'High', status:'Approved'},
+  {item:'FG-4004', name:'Hydraulic Actuator — Model HA-750', month:'Jul 2026', forecastQty:20, actualLastMonth:14, confidence:'Medium', status:'Pending Approval'},
+  {item:'FG-4001', name:'Industrial Blower Unit — Model IB-200', month:'Aug 2026', forecastQty:48, actualLastMonth:null, confidence:'Medium', status:'Draft'},
+  {item:'FG-4003', name:'Precision Gearbox Unit — Model PG-100', month:'Aug 2026', forecastQty:40, actualLastMonth:null, confidence:'Medium', status:'Draft'}
+];
+const SEASONAL_FORECAST = [
+  {item:'FG-4001', name:'Industrial Blower Unit — Model IB-200', season:'Summer (Apr–Jun)', seasonalIndex:1.35, peakMonth:'May', status:'Active'},
+  {item:'FG-4004', name:'Hydraulic Actuator — Model HA-750', season:'Monsoon (Jul–Sep)', seasonalIndex:1.18, peakMonth:'August', status:'Active'},
+  {item:'FG-4002', name:'Conveyor Motor Drive — Model CMD-500', season:'Festive (Oct–Dec)', seasonalIndex:1.42, peakMonth:'November', status:'Active'},
+  {item:'FG-4003', name:'Precision Gearbox Unit — Model PG-100', season:'Year-round (Low seasonality)', seasonalIndex:1.05, peakMonth:'—', status:'Active'}
+];
+
+/* ============================= MRP ============================= */
+const MRP_RUNS = [
+  {code:'MRP-2026-071', date:'2026-07-13', horizon:'01 Jul – 31 Aug 2026', itemsPlanned:12, shortagesFound:5, status:'Completed'},
+  {code:'MRP-2026-070', date:'2026-06-29', horizon:'01 Jun – 31 Jul 2026', itemsPlanned:12, shortagesFound:3, status:'Completed'},
+  {code:'MRP-2026-069', date:'2026-06-15', horizon:'15 Jun – 15 Aug 2026', itemsPlanned:11, shortagesFound:4, status:'Completed'},
+  {code:'MRP-2026-072', date:'2026-07-15', horizon:'15 Jul – 15 Sep 2026', itemsPlanned:12, shortagesFound:0, status:'Running'}
+];
+const MATERIAL_SHORTAGE = [
+  {item:'RM-1005', name:'Stainless Steel Rod SS304', required:2340, available:2100, shortfall:240, neededBy:'2026-07-20', status:'Open'},
+  {item:'CP-2003', name:'DC Motor 12V 150W', required:420, available:360, shortfall:60, neededBy:'2026-07-18', status:'Open'},
+  {item:'CP-2004', name:'PCB Control Board Rev C', required:560, available:520, shortfall:40, neededBy:'2026-07-22', status:'Open'},
+  {item:'RM-1002', name:'Aluminium Billet 6061', required:3400, available:3200, shortfall:200, neededBy:'2026-07-25', status:'Purchase Raised'},
+  {item:'CP-2001', name:'Bearing 6205-2RS', required:1900, available:1840, shortfall:60, neededBy:'2026-07-19', status:'Purchase Raised'}
+];
+const SUGGESTED_PURCHASE = [
+  {item:'RM-1005', name:'Stainless Steel Rod SS304', qty:400, vendor:'Alloy Metals Traders', estCost:84000, requiredBy:'2026-07-20', status:'Pending Approval'},
+  {item:'CP-2003', name:'DC Motor 12V 150W', qty:100, vendor:'Quantum IT Services', estCost:145000, requiredBy:'2026-07-18', status:'Pending Approval'},
+  {item:'CP-2004', name:'PCB Control Board Rev C', qty:80, vendor:'Quantum IT Services', estCost:71200, requiredBy:'2026-07-22', status:'Approved'},
+  {item:'RM-1002', name:'Aluminium Billet 6061', qty:300, vendor:'Bluewave Components Pvt Ltd', estCost:84000, requiredBy:'2026-07-25', status:'Approved'},
+  {item:'CP-2001', name:'Bearing 6205-2RS', qty:200, vendor:'Precision Bearings Co.', estCost:19000, requiredBy:'2026-07-19', status:'Approved'}
+];
+const SUGGESTED_MANUFACTURING = [
+  {item:'SA-3001', name:'Gearbox Sub-Assembly', qty:35, dueDate:'2026-07-19', workCenter:'Assembly Line 1', status:'Pending Approval'},
+  {item:'SA-3002', name:'Chassis Frame Weldment', qty:45, dueDate:'2026-07-18', workCenter:'Welding Bay 1', status:'Approved'},
+  {item:'SA-3003', name:'Motor-Drive Assembly', qty:26, dueDate:'2026-07-20', workCenter:'Assembly Line 1', status:'Pending Approval'},
+  {item:'FG-4003', name:'Precision Gearbox Unit — Model PG-100', qty:38, dueDate:'2026-07-25', workCenter:'Assembly Line 2', status:'Approved'}
+];
+
+/* ============================= MPS ============================= */
+const MPS_PLANS = [
+  {item:'FG-4001', name:'Industrial Blower Unit — Model IB-200', period:'Jul 2026', demandForecast:45, existingOrders:10, mpsQty:55, status:'Firmed'},
+  {item:'FG-4002', name:'Conveyor Motor Drive — Model CMD-500', period:'Jul 2026', demandForecast:26, existingOrders:8, mpsQty:33, status:'Firmed'},
+  {item:'FG-4003', name:'Precision Gearbox Unit — Model PG-100', period:'Jul 2026', demandForecast:38, existingOrders:15, mpsQty:53, status:'Firmed'},
+  {item:'FG-4004', name:'Hydraulic Actuator — Model HA-750', period:'Jul 2026', demandForecast:20, existingOrders:6, mpsQty:24, status:'Pending Approval'},
+  {item:'FG-4001', name:'Industrial Blower Unit — Model IB-200', period:'Aug 2026', demandForecast:48, existingOrders:0, mpsQty:48, status:'Draft'}
+];
+/* ============================= CAPACITY PLANNING ============================= */
+const MACHINE_CAPACITY = [
+  {machine:'CNC Lathe 1', workCenter:'CNC Turning Center 1', availableHrsWeek:56, plannedHrsWeek:48, utilPct:86},
+  {machine:'CNC Lathe 2', workCenter:'CNC Turning Center 1', availableHrsWeek:56, plannedHrsWeek:42, utilPct:75},
+  {machine:'CNC Lathe 3', workCenter:'CNC Turning Center 1', availableHrsWeek:56, plannedHrsWeek:20, utilPct:36},
+  {machine:'VMC Milling 1', workCenter:'CNC Milling Center 1', availableHrsWeek:56, plannedHrsWeek:50, utilPct:89},
+  {machine:'VMC Milling 2', workCenter:'CNC Milling Center 1', availableHrsWeek:56, plannedHrsWeek:30, utilPct:54},
+  {machine:'MIG Welder Station 1', workCenter:'Welding Bay 1', availableHrsWeek:56, plannedHrsWeek:52, utilPct:93},
+  {machine:'MIG Welder Station 2', workCenter:'Welding Bay 1', availableHrsWeek:56, plannedHrsWeek:44, utilPct:79}
+];
+const WORK_CENTER_CAPACITY = [
+  {workCenter:'CNC Turning Center 1', plant:'Bengaluru Plant 1 (Machining)', availableHrsWeek:168, plannedHrsWeek:110, freeHrs:58, status:'Available'},
+  {workCenter:'CNC Milling Center 1', plant:'Bengaluru Plant 1 (Machining)', availableHrsWeek:112, plannedHrsWeek:80, freeHrs:32, status:'Available'},
+  {workCenter:'Welding Bay 1', plant:'Chennai Plant 3 (Sheet Metal)', availableHrsWeek:224, plannedHrsWeek:196, freeHrs:28, status:'Near Capacity'},
+  {workCenter:'Assembly Line 1', plant:'Pune Plant 2 (Assembly)', availableHrsWeek:112, plannedHrsWeek:106, freeHrs:6, status:'Overloaded'},
+  {workCenter:'Assembly Line 2', plant:'Pune Plant 2 (Assembly)', availableHrsWeek:112, plannedHrsWeek:92, freeHrs:20, status:'Available'},
+  {workCenter:'Paint Booth 1', plant:'Pune Plant 2 (Assembly)', availableHrsWeek:56, plannedHrsWeek:38, freeHrs:18, status:'Available'}
+];
+const RESOURCE_PLANNING = [
+  {resource:'CNC Machinists', workCenter:'CNC Turning / Milling Centers', required:9, available:8, gap:1, status:'Understaffed'},
+  {resource:'Welders', workCenter:'Welding Bay 1', required:14, available:14, gap:0, status:'Adequate'},
+  {resource:'Assembly Technicians', workCenter:'Assembly Line 1 & 2', required:19, available:19, gap:0, status:'Adequate'},
+  {resource:'QC Inspectors', workCenter:'QC Station 1', required:4, available:3, gap:1, status:'Understaffed'},
+  {resource:'Painters', workCenter:'Paint Booth 1', required:3, available:3, gap:0, status:'Adequate'}
+];
+
+/* ============================= PROCUREMENT PLANNING ============================= */
+const PURCHASE_SUGGESTIONS = SUGGESTED_PURCHASE;
+const VENDOR_PLANNING = VENDORS.map(function(v){
+  const alloc = Math.round(200+Math.random()*0);
+  return {vendor:v.name, category:v.category, plannedOrders: (v.code==='VEN-01'?2:(v.code==='VEN-03'?2:1)), leadTime:v.leadTime, onTimePct:v.onTimePct, status: v.onTimePct>=90?'Preferred':'Standard'};
+});
+
+/* ============================= PRODUCTION SCHEDULING ============================= */
+const DAILY_SCHEDULE = [
+  {date:'2026-07-15', workOrder:'WO-8840', item:'Conveyor Motor Drive — Model CMD-500', workCenter:'Assembly Line 2', qty:8, shift:'Shift A (08:00–17:00)', status:'In Progress'},
+  {date:'2026-07-15', workOrder:'WO-8841', item:'Industrial Blower Unit — Model IB-200', workCenter:'Sheet Metal Cell 1', qty:10, shift:'Shift A (06:00–14:00)', status:'Scheduled'},
+  {date:'2026-07-16', workOrder:'WO-8842', item:'Precision Gearbox Unit — Model PG-100', workCenter:'CNC Turning Center 1', qty:15, shift:'Shift A (06:00–14:00)', status:'Scheduled'},
+  {date:'2026-07-16', workOrder:'WO-8841', item:'Industrial Blower Unit — Model IB-200', workCenter:'CNC Milling Center 1', qty:10, shift:'Shift B (14:00–22:00)', status:'Scheduled'},
+  {date:'2026-07-22', workOrder:'WO-8843', item:'Hydraulic Actuator — Model HA-750', workCenter:'CNC Turning Center 1', qty:6, shift:'Shift A (06:00–14:00)', status:'Scheduled'}
+];
+const WEEKLY_SCHEDULE = [
+  {week:'Week 29 (14–20 Jul 2026)', workOrders:3, totalQty:33, workCenters:'Assembly Line 1/2, Sheet Metal Cell 1', status:'In Progress'},
+  {week:'Week 30 (21–27 Jul 2026)', workOrders:2, totalQty:21, workCenters:'CNC Turning Center 1, Welding Bay 1', status:'Planned'},
+  {week:'Week 31 (28 Jul – 03 Aug 2026)', workOrders:2, totalQty:26, workCenters:'Assembly Line 2, QC Station 1', status:'Planned'},
+  {week:'Week 32 (04–10 Aug 2026)', workOrders:1, totalQty:18, workCenters:'CNC Milling Center 1', status:'Draft'}
+];
+const MONTHLY_SCHEDULE = [
+  {month:'July 2026', plannedWorkOrders:8, plannedQty:113, capacityUtil:82, status:'In Progress'},
+  {month:'August 2026', plannedWorkOrders:6, plannedQty:96, capacityUtil:74, status:'Planned'},
+  {month:'September 2026', plannedWorkOrders:5, plannedQty:80, capacityUtil:65, status:'Draft'}
+];
+
+/* ============================= PLANNING CALENDAR ============================= */
+const PLANNING_CALENDAR_EVENTS = [
+  {date:'2026-07-14', event:'MRP Run — MRP-2026-071 completed', type:'MRP'},
+  {date:'2026-07-15', event:'WO-8840 scheduled — Assembly Line 2', type:'Schedule'},
+  {date:'2026-07-16', event:'WO-8842 scheduled — CNC Turning', type:'Schedule'},
+  {date:'2026-07-18', event:'PCB Control Board shortage needed by', type:'Shortage'},
+  {date:'2026-07-19', event:'Bearing 6205-2RS shortage needed by', type:'Shortage'},
+  {date:'2026-07-20', event:'SS304 Rod shortage needed by', type:'Shortage'},
+  {date:'2026-07-22', event:'WO-8843 scheduled — CNC Turning', type:'Schedule'},
+  {date:'2026-07-25', event:'Aluminium Billet PO required by', type:'Procurement'},
+  {date:'2026-07-31', event:'July MPS closing & August MPS review', type:'Planning'}
+];
+
+/* ============================= EXCEPTION MANAGEMENT ============================= */
+const EXCEPTIONS = [
+  {code:'EXC-401', type:'Material Shortage', entity:'RM-1005 — SS304 Rod', detail:'Shortfall of 240 KG against WO-8842 requirement', severity:'High', status:'Open'},
+  {code:'EXC-402', type:'Capacity Overload', entity:'Assembly Line 1', detail:'Planned load 106 hrs vs 112 hrs available — near breach', severity:'Medium', status:'Open'},
+  {code:'EXC-403', type:'Late Vendor Delivery', entity:'Quantum IT Services — PCB Control Board', detail:'PO delivery running 3 days behind promised date', severity:'High', status:'Open'},
+  {code:'EXC-404', type:'Forecast Deviation', entity:'FG-4004 — Hydraulic Actuator', detail:'Actual demand 30% below forecast for June 2026', severity:'Low', status:'Under Review'},
+  {code:'EXC-405', type:'Work Order Delay', entity:'WO-8840', detail:'Running 2 days behind planned completion date', severity:'Medium', status:'Open'},
+  {code:'EXC-406', type:'Resource Gap', entity:'QC Inspectors', detail:'1 inspector short against required staffing for July', severity:'Medium', status:'Resolved'}
+];
+/* ============================= AUDIT / ADMIN ============================= */
+const AUDIT_LOGS = [
+  {ts:'2026-07-14 09:12', actor:'Anita Deshmukh', action:'Ran MRP', entity:'MRP-2026-071', module:'MRP', ip:'103.21.9.44'},
+  {ts:'2026-07-14 08:40', actor:'Anita Deshmukh', action:'Approved purchase suggestion', entity:'PCB Control Board Rev C — 80 units', module:'Procurement Planning', ip:'103.21.9.61'},
+  {ts:'2026-07-13 17:22', actor:'Vikram Shah', action:'Firmed MPS plan', entity:'FG-4001 — July 2026', module:'MPS', ip:'103.21.9.51'},
+  {ts:'2026-07-13 15:05', actor:'Anita Deshmukh', action:'Approved sales forecast', entity:'FG-4001 — July 2026', module:'Demand Forecasting', ip:'103.21.9.12'},
+  {ts:'2026-07-12 11:30', actor:'System', action:'Flagged capacity exception', entity:'Assembly Line 1', module:'Exception Management', ip:'—'},
+  {ts:'2026-07-11 16:18', actor:'Vikram Shah', action:'Scheduled work order', entity:'WO-8842', module:'Production Scheduling', ip:'103.21.9.44'},
+  {ts:'2026-07-10 10:05', actor:'Anita Deshmukh', action:'Reviewed vendor lead time', entity:'Quantum IT Services', module:'Procurement Planning', ip:'103.21.9.70'}
+];
+const RBAC_COLS = ['Demand Forecast','MRP','MPS','Capacity Plan','Procurement Plan','Production Schedule','Exceptions','Reports'];
+const RBAC_MATRIX = [
+  {role:'Supply Chain Manager', vals:['A','A','A','A','A','A','A','A']},
+  {role:'Demand Planner', vals:['A','V','V','N','N','V','V','A']},
+  {role:'Materials Planner', vals:['V','A','V','V','A','V','A','A']},
+  {role:'Production Scheduler', vals:['V','V','A','A','V','A','A','A']},
+  {role:'Procurement Analyst', vals:['N','V','N','N','A','N','V','V']},
+  {role:'Plant Manager (Read-only)', vals:['V','V','V','V','V','V','V','V']}
+];
+
+/* ============================= CORE HELPERS ============================= */
+function pageHeader(title, sub, actionsHtml){
+  return '<div class="page-header"><div><h1 class="page-title">'+title+'</h1>'+(sub?'<div class="page-sub">'+sub+'</div>':'')+'</div><div class="page-actions">'+(actionsHtml||'')+'</div></div>';
+}
+function tabbar(tabs, group){
+  return '<div data-tabgroup="'+group+'"><div class="tabbar">'+tabs.map(function(t,i){return '<div class="tabbtn'+(i===0?' active':'')+'" data-tab="'+t.id+'">'+t.label+'</div>';}).join('')+'</div>';
+}
+function tableHtml(headers, rows, opts){
+  opts=opts||{};
+  if(!rows.length) return '<div class="empty">No records match your search or filters.</div>';
+  let thead='<thead><tr>'+headers.map(function(h,i){return '<th'+(opts.numCols&&opts.numCols.indexOf(i)>-1?' class="num"':'')+'>'+h+'</th>';}).join('')+'</tr></thead>';
+  let tbody='<tbody>'+rows.map(function(r,ri){
+    return '<tr'+(opts.rowClick?' class="row-click" onclick="'+opts.rowClick(ri)+'"':'')+'>'+r.map(function(c,i){return '<td'+(opts.numCols&&opts.numCols.indexOf(i)>-1?' class="num"':'')+'>'+c+'</td>';}).join('')+'</tr>';
+  }).join('')+'</tbody>';
+  return '<table>'+thead+tbody+'</table>';
+}
+function toolbar(id, placeholder, filterSelects, extraBtns){
+  return '<div class="table-toolbar"><div class="search-input">'+ic('search')+'<input placeholder="'+placeholder+'" oninput="genericFilter(\''+id+'\', this.value)"/></div>'+
+    (filterSelects||[]).map(function(f){ return '<select class="select-filter">'+f.map(function(o){return '<option>'+o+'</option>';}).join('')+'</select>'; }).join('') +
+    '<button class="btn btn-secondary btn-sm">'+ic('filter')+'More Filters</button>'+
+    '<div class="grow"></div>'+(extraBtns||'')+'</div>';
+}
+function pager(count, total){
+  return '<div class="pager"><span>Showing '+count+' of '+total+' records</span><div class="pgbtn"><button onclick="toast(&quot;This is the first page.&quot;)">Previous</button><button onclick="toast(&quot;No further pages in this prototype dataset.&quot;)">Next</button></div></div>';
+}
+function badgeFor(status){
+  const map = {
+    Active:'b-green', Approved:'b-green', Completed:'b-green', Firmed:'b-green', Adequate:'b-green', Available:'b-green', Preferred:'b-green', Resolved:'b-green', 'Received into Stock':'b-green',
+    Pending:'b-amber', 'Pending Approval':'b-amber', Draft:'b-gray', 'In Progress':'b-blue', Scheduled:'b-blue', Planned:'b-blue', Running:'b-blue', 'Purchase Raised':'b-blue', 'Under Review':'b-amber', 'Near Capacity':'b-amber', Understaffed:'b-amber', Standard:'b-gray',
+    Open:'b-red', Overloaded:'b-red', High:'b-red', Medium:'b-amber', Low:'b-gray'
+  };
+  return '<span class="badge '+(map[status]||'b-gray')+'">'+status+'</span>';
+}
+function chip(t){ return '<span class="chip">'+t+'</span>'; }
+function kv(pairs){ return '<div class="kv-grid">'+pairs.map(function(p){ return '<div class="kv"><label>'+p[0]+'</label><b>'+p[1]+'</b></div>'; }).join('')+'</div>'; }
+function field(label, type, opts, full){
+  let input;
+  if(type==='select'){ input='<select>'+(Array.isArray(opts)?opts:[]).map(function(o){return '<option>'+o+'</option>';}).join('')+'</select>'; }
+  else if(type==='textarea'){ input='<textarea rows="3" placeholder="'+(typeof opts==='string'?opts:'')+'"></textarea>'; }
+  else { input='<input type="'+type+'" placeholder="'+(typeof opts==='string'?opts:'')+'"/>'; }
+  return '<div class="field'+(full?' full':'')+'"><label>'+label+'</label>'+input+'</div>';
+}
+function entCell(name, sub){ return '<div class="cell-ent"><div class="avatar">'+initials(name)+'</div><div class="meta"><b>'+name+'</b>'+(sub?'<span>'+sub+'</span>':'')+'</div></div>'; }
+/* ============================= DATA-DRIVEN TABLE REGISTRY ============================= */
+const TABLE_REG = {};
+function tableHtmlObjs(headers, rowObjs, opts){
+  opts=opts||{};
+  if(!rowObjs.length) return '<div class="empty">No records match your search or filters.</div>';
+  let thead='<thead><tr><th style="width:34px;"><input type="checkbox" onclick="event.stopPropagation()"/></th>'+headers.map(function(h,i){return '<th'+(opts.numCols&&opts.numCols.indexOf(i)>-1?' class="num"':'')+'>'+h+'</th>';}).join('')+'<th></th></tr></thead>';
+  let tbody='<tbody>'+rowObjs.map(function(r){
+    return '<tr'+(r.onclick?' class="row-click" onclick="'+r.onclick+'"':'')+'><td><input type="checkbox" onclick="event.stopPropagation()"/></td>'+r.cells.map(function(c,i){return '<td'+(opts.numCols&&opts.numCols.indexOf(i)>-1?' class="num"':'')+'>'+c+'</td>';}).join('')+
+      '<td><button class="icon-btn" style="width:30px;height:30px;" onclick="event.stopPropagation();'+(r.onclick||'')+'">'+ic('eye')+'</button></td></tr>';
+  }).join('')+'</tbody>';
+  return '<table>'+thead+tbody+'</table>';
+}
+function buildRows(id, data){ const reg=TABLE_REG[id]; return data.map(function(d){ return reg.rowFn(d); }); }
+function registerTable(id, headers, data, rowFn, opts){
+  TABLE_REG[id] = {headers:headers, data:data, rowFn:rowFn, opts:opts||{}};
+  return '<div id="tblwrap-'+id+'">'+tableHtmlObjs(headers, buildRows(id,data), opts)+'</div>';
+}
+function genericFilter(id, q){
+  const reg=TABLE_REG[id]; if(!reg) return;
+  q=String(q).toLowerCase();
+  const filtered=reg.data.filter(function(d){ return JSON.stringify(d).toLowerCase().indexOf(q)>-1; });
+  const el=document.getElementById('tblwrap-'+id);
+  if(el) el.outerHTML='<div id="tblwrap-'+id+'">'+tableHtmlObjs(reg.headers, filtered.map(function(d){return reg.rowFn(d);}), reg.opts)+'</div>';
+}
+
+/* ============================= MODAL ============================= */
+function openModal(title, bodyHtml, footHtml){
+  const root=document.getElementById('modal-root');
+  root.innerHTML='<div class="modal-box"><div class="modal-head"><h3>'+title+'</h3><button class="icon-btn" onclick="closeModal()">'+ic('x')+'</button></div>'+
+    '<div class="modal-body">'+bodyHtml+'</div>'+(footHtml?'<div class="modal-foot">'+footHtml+'</div>':'')+'</div>';
+  root.classList.remove('hidden');
+  initTabs(root); initAccordions(root);
+}
+function closeModal(){ document.getElementById('modal-root').classList.add('hidden'); }
+function confirmDelete(entityLabel, name){
+  openModal('Delete '+entityLabel+'?',
+    '<div class="hstack" style="align-items:flex-start;gap:14px;"><div class="stat-icon" style="background:var(--red-bg);color:var(--red);flex:none;">'+ic('alerttri')+'</div>'+
+    '<div><p style="margin:0 0 6px;font-size:13.5px;">This will permanently delete <b>'+esc(name)+'</b> from '+entityLabel+'.</p><p class="muted" style="font-size:12.3px;margin:0;">This action cannot be undone. Downstream plans may be affected.</p></div></div>',
+    '<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-danger" onclick="closeModal();toast(&quot;'+esc(name)+' deleted.&quot;)">'+ic('trash')+'Delete</button>'
+  );
+}
+
+/* ============================= RIGHT DRAWER ============================= */
+function openDrawer(title, sub, overviewPairs, opts){
+  opts=opts||{};
+  const root=document.getElementById('drawer-root');
+  const activity=opts.activity||defaultActivity();
+  const attachments=opts.attachments||defaultAttachments();
+  const comments=opts.comments||defaultComments();
+  const tabs=['Overview','Timeline','Attachments','Comments','Audit Log'];
+  let html='<div class="drawer-box"><div class="drawer-head"><div><h3>'+title+'</h3><span>'+(sub||'')+'</span></div><button class="icon-btn" onclick="closeDrawer()">'+ic('x')+'</button></div>';
+  html+='<div class="drawer-body"><div data-tabgroup="dr"><div class="tabbar">'+tabs.map(function(t,i){return '<div class="tabbtn'+(i===0?' active':'')+'" data-tab="dr-'+i+'">'+t+'</div>';}).join('')+'</div>';
+  html+='<div class="tabpanel active" data-tab="dr-0">'+kv(overviewPairs)+(opts.extra||'')+'</div>';
+  html+='<div class="tabpanel" data-tab="dr-1">'+activity.map(function(a){
+    return '<div class="activity"><div class="a-icon" style="background:'+a.bg+';color:'+a.fg+';">'+ic(a.icon)+'</div><div><b>'+a.title+'</b><br><span>'+a.when+'</span></div></div>';
+  }).join('')+'</div>';
+  html+='<div class="tabpanel" data-tab="dr-2">'+attachments.map(function(a){
+    return '<div class="attach-row"><div class="a-ico">'+ic('file')+'</div><div style="flex:1;"><b>'+a.name+'</b><span>'+a.meta+'</span></div><button class="icon-btn" style="width:30px;height:30px;">'+ic('download')+'</button></div>';
+  }).join('')+'<button class="btn btn-secondary btn-sm" style="margin-top:6px;">'+ic('upload')+'Upload Attachment</button></div>';
+  html+='<div class="tabpanel" data-tab="dr-3">'+comments.map(function(c){
+    return '<div class="comment"><div class="avatar round" style="width:30px;height:30px;font-size:11px;">'+initials(c.by)+'</div><div class="c-body"><b>'+c.by+'</b> <span>'+c.when+'</span><p>'+c.text+'</p></div></div>';
+  }).join('')+'<div class="field full" style="margin-top:10px;"><textarea rows="2" placeholder="Add a comment…"></textarea></div><button class="btn btn-primary btn-sm" onclick="toast(&quot;Comment added.&quot;)">'+ic('msg')+'Post Comment</button></div>';
+  html+='<div class="tabpanel" data-tab="dr-4"><div class="table-wrap">'+tableHtml(['Timestamp','Actor','Action'], AUDIT_LOGS.slice(0,4).map(function(a){return [a.ts,a.actor,a.action];}))+'</div></div>';
+  html+='</div></div>'+(opts.foot!==false ? '<div class="drawer-foot"><button class="btn btn-secondary" onclick="closeDrawer()">Close</button>'+(opts.footBtns||'<button class="btn btn-secondary">'+ic('edit')+'Edit</button><button class="btn btn-primary">'+ic('check')+'Approve</button>') +'</div>' : '')+'</div>';
+  root.innerHTML=html;
+  root.classList.remove('hidden');
+  initTabs(root);
+}
+function closeDrawer(){ document.getElementById('drawer-root').classList.add('hidden'); }
+function defaultActivity(){
+  return [
+    {icon:'check', bg:'var(--green-bg)', fg:'var(--green)', title:'Record created', when:'2026-07-02 · Anita Deshmukh'},
+    {icon:'edit', bg:'var(--blue-50)', fg:'var(--blue-600)', title:'Details updated', when:'2026-07-08 · Anita Deshmukh'},
+    {icon:'msg', bg:'var(--amber-bg)', fg:'var(--amber)', title:'Comment added by Supply Chain Manager', when:'2026-07-11 · Vikram Shah'}
+  ];
+}
+function defaultAttachments(){ return [{name:'Demand_Data_Extract.xlsx', meta:'184 KB · Uploaded 2026-07-05'},{name:'Planning_Notes.pdf', meta:'88 KB · Uploaded 2026-07-06'}]; }
+function defaultComments(){ return [{by:'Anita Deshmukh', when:'2026-07-09', text:'Verified against last 3 months of actuals — looks consistent.'},{by:'Vikram Shah', when:'2026-07-10', text:'Approved for downstream MPS and capacity planning.'}]; }
+function approvalStepperHtml(chain, current){
+  let reached=false;
+  return '<div class="stepper">'+chain.map(function(step,i){
+    let cls='done'; if(step===current){ cls='active'; reached=true; } else if(reached){ cls='pending'; }
+    return '<div class="step '+cls+'">'+(i<chain.length-1?'<div class="step-line"></div>':'')+
+      '<div class="step-dot">'+(cls==='done'?ic('check'):(i+1))+'</div><div class="step-body"><b>'+step+'</b><span>'+(cls==='done'?'Completed':(cls==='active'?'Awaiting action':'Not started'))+'</span></div></div>';
+  }).join('')+'</div>';
+}
+
+/* ============================= ROUTER / WIRING ============================= */
+function showView(id, navId){
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  const target=document.getElementById('view-'+id);
+  if(target) target.classList.add('active');
+  const active=navId||id;
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.toggle('active', n.getAttribute('data-nav')===active); });
+  const mainEl=document.querySelector('.main'); if(mainEl) mainEl.scrollTop=0;
+}
+function initTabs(root){
+  (root||document).querySelectorAll('.tabbar').forEach(function(bar){
+    bar.querySelectorAll('.tabbtn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        const group=bar.closest('.view')||bar.closest('.modal-box')||bar.closest('.drawer-box')||document;
+        group.querySelectorAll('.tabbtn').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        group.querySelectorAll('.tabpanel').forEach(function(p){ p.classList.toggle('active', p.getAttribute('data-tab')===btn.getAttribute('data-tab')); });
+      });
+    });
+  });
+}
+function initAccordions(root){
+  (root||document).querySelectorAll('.acc-head').forEach(function(h){
+    h.addEventListener('click', function(){ h.parentElement.classList.toggle('open'); });
+  });
+}
+function toggleSidebar(){ document.getElementById('sidebar').classList.toggle('collapsed'); }
+function onCompanyChange(v){ CURRENT_COMPANY=v; toast('Switched active company to '+v+'.'); }
+function globalSearch(q){ if(q && q.length>2) toast('Searching "'+q+'" across forecasts, MRP, work orders, vendors… (prototype)'); }
+
+/* ============================= SIDEBAR / TOPBAR ============================= */
+function renderSidebar(){
+  let html='<div class="sidebar-brand" onclick="toggleSidebar()"><div class="brand-mark">IP</div><b>IMPACGO Plan</b></div>';
+  html+='<div class="sidebar-tenant"><b>'+CURRENT_COMPANY+'</b>Pune Plant 2 (Assembly)</div>';
+  html+='<div class="nav-scroll">';
+  NAV.forEach(function(group){
+    if(group.group) html+='<div class="nav-group-label">'+group.group+'</div>';
+    group.items.forEach(function(item){
+      html+='<div class="nav-item" data-nav="'+item.id+'" onclick="showView(\''+item.id+'\')">'+ic(item.icon)+'<span>'+item.label+'</span>'+(item.count!=null?'<span class="count">'+item.count+'</span>':'')+'</div>';
+    });
+  });
+  html+='</div><div class="sidebar-foot">'+
+    '<div class="sidebar-user" onclick="showView(\'admin\')"><div class="avatar round" style="background:#4f7bf5;color:#fff;">AD</div><div><div class="u-name">Anita Deshmukh</div><div class="u-role">Demand Planner</div></div></div>'+
+    '<div class="logout-item" onclick="toast(&quot;Signed out of IMPACGO Plan (prototype).&quot;)">'+ic('logout')+'<span>Sign Out</span></div></div>';
+  document.getElementById('sidebar').innerHTML=html;
+}
+function renderTopbar(){
+  let html='<button class="icon-btn" onclick="toggleSidebar()">'+ic('more')+'</button>'+
+    '<div class="topbar-search">'+ic('search')+'<input placeholder="Search forecasts, MRP runs, work orders, vendors…" oninput="globalSearch(this.value)"/></div>'+
+    '<div class="switcher"><span class="swlabel">Company</span><select onchange="onCompanyChange(this.value)">'+COMPANIES.map(function(c){return '<option'+(c===CURRENT_COMPANY?' selected':'')+'>'+c+'</option>';}).join('')+'</select></div>'+
+    '<div class="topbar-actions">'+
+    '<button class="icon-btn" title="Notifications" onclick="toggleNotif()">'+ic('bell')+'<span class="dot"></span></button>'+
+    '<button class="icon-btn" title="Exceptions" onclick="showView(\'exceptions\')">'+ic('alerttri')+'<span class="dot"></span></button>'+
+    '<div class="topbar-profile" onclick="showView(\'admin\')"><div class="avatar round" style="background:#4f7bf5;color:#fff;">AD</div><div><div style="font-size:12.5px;font-weight:700;">Anita Deshmukh</div><div style="font-size:11px;color:var(--text-faint);">Demand Planner</div></div>'+ic('chevdown')+'</div>'+
+    '</div>';
+  document.getElementById('topbar').innerHTML=html;
+}
+function toggleNotif(){ toast('5 open exceptions need your attention — material shortages, capacity overloads & late deliveries.'); }
+function crumbs(parts){
+  return '<div class="crumbs">'+parts.map(function(p,i){ return (i>0?ic('chevright'):'') + (p.click? '<a onclick="'+p.click+'" style="cursor:pointer;">'+p.label+'</a>' : '<span>'+p.label+'</span>'); }).join('')+'</div>';
+}
+/* ============================= VIEW: PLANNING WORKSPACE ============================= */
+function viewWorkspace(){
+  let html = pageHeader('Planning Workspace', 'Your prioritized worklist across demand, MRP, capacity, procurement and scheduling for '+CURRENT_COMPANY+'.', '<button class="btn btn-secondary">'+ic('refresh')+'Refresh</button>');
+  html += '<div class="two-col"><div>';
+  html += '<div class="section-title mt-0">My Pending Actions</div><div class="table-wrap">'+
+    tableHtml(['Task','Record','Module','Due','Status'], [
+      ['Approve sales forecast','FG-4004 — Hydraulic Actuator, Jul 2026','Demand Forecasting','2026-07-16', badgeFor('Pending Approval')],
+      ['Approve purchase suggestion','RM-1005 — SS304 Rod, 400 KG','Procurement Planning','2026-07-17', badgeFor('Pending Approval')],
+      ['Approve manufacturing suggestion','SA-3001 — Gearbox Sub-Assembly, Qty 35','MRP','2026-07-18', badgeFor('Pending Approval')],
+      ['Firm MPS plan','FG-4004 — Hydraulic Actuator, Jul 2026','MPS','2026-07-18', badgeFor('Pending Approval')],
+      ['Resolve exception','EXC-402 — Assembly Line 1 capacity near breach','Exception Management','2026-07-16', badgeFor('Open')],
+      ['Resolve exception','EXC-403 — Late delivery, Quantum IT Services','Exception Management','2026-07-16', badgeFor('Open')]
+    ], {rowClick:function(){return "showView('workspace')";}}) + '</div>';
+  html += '<div class="section-title">Open Material Shortages</div><div class="table-wrap">'+
+    tableHtml(['Item','Required','Available','Shortfall','Needed By','Status'], MATERIAL_SHORTAGE.map(function(m){
+      return [m.name, fmtNum(m.required), fmtNum(m.available), '<span style="color:var(--red);font-weight:700;">'+fmtNum(m.shortfall)+'</span>', m.neededBy, badgeFor(m.status)];
+    }), {numCols:[1,2,3]}) + '</div>';
+  html += '</div><div>';
+  html += '<div class="card card-pad"><h3 class="mt-0" style="margin-bottom:14px;">Quick Actions</h3><div style="display:flex;flex-direction:column;gap:8px;">'+
+    '<button class="btn btn-secondary" style="justify-content:flex-start;" onclick="showView(&quot;demand&quot;);modalNewSalesForecast();">'+ic('plus')+'New Sales Forecast</button>'+
+    '<button class="btn btn-secondary" style="justify-content:flex-start;" onclick="showView(&quot;mrp&quot;);modalRunMRP();">'+ic('refresh')+'Run MRP</button>'+
+    '<button class="btn btn-secondary" style="justify-content:flex-start;" onclick="showView(&quot;procurement&quot;);">'+ic('truck')+'Review Purchase Suggestions</button>'+
+    '<button class="btn btn-secondary" style="justify-content:flex-start;" onclick="showView(&quot;scheduling&quot;);">'+ic('calendar')+'View Production Schedule</button>'+
+    '</div></div>';
+  html += '<div class="card card-pad" style="margin-top:16px;"><h3 class="mt-0" style="margin-bottom:14px;">Module Shortcuts</h3><div class="grid g-2">'+
+    [['demand','Demand Forecasting','trend'],['mrp','MRP','layers'],['mps','MPS','clipboard'],['capacity','Capacity Planning','cpu'],['procurement','Procurement Planning','truck'],['scheduling','Production Scheduling','calendar'],['plancal','Planning Calendar','calendar'],['exceptions','Exception Management','alerttri'],['reports','Planning Reports','bars']].map(function(m){
+      return '<div class="mod-card" style="padding:12px;" onclick="showView(\''+m[0]+'\')"><div class="mod-icon" style="width:30px;height:30px;background:var(--blue-50);color:var(--blue-600);">'+ic(m[2])+'</div><div class="mod-title" style="font-size:12.5px;">'+m[1]+'</div></div>';
+    }).join('') + '</div></div>';
+  html += '</div></div>';
+  return html;
+}
+
+/* ============================= VIEW: DEMAND FORECASTING ============================= */
+function viewDemand(){
+  let html = pageHeader('Demand Forecasting', 'Forecast models, sales forecast and seasonal forecast for '+CURRENT_COMPANY+'.',
+    '<button class="btn btn-secondary">'+ic('download')+'Export</button><button class="btn btn-secondary">'+ic('upload')+'Import</button><button class="btn btn-primary" onclick="modalNewSalesForecast()">'+ic('plus')+'New Sales Forecast</button>');
+  html += tabbar([
+    {id:'dm-model', label:'Forecast Models'}, {id:'dm-sales', label:'Sales Forecast'}, {id:'dm-season', label:'Seasonal Forecast'}
+  ], 'dm') + '</div>';
+
+  html += '<div class="tabpanel active" data-tab="dm-model"><div class="table-wrap">'+
+    '<div class="table-toolbar"><div class="grow"></div><button class="btn btn-primary btn-sm" onclick="toast(&quot;Forecast model created.&quot;)">'+ic('plus')+'New Model</button></div>'+
+    tableHtml(['Model Name','Type','Accuracy','Best Used For','Status'], FORECAST_MODELS.map(function(m){
+      return [m.name, chip(m.type), '<div class="progress" style="width:90px;"><span style="width:'+m.accuracy+'%;"></span></div> '+m.accuracy+'%', m.usedFor, badgeFor(m.status)];
+    }), {numCols:[2]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="dm-sales"><div class="table-wrap">'+
+    toolbar('salesf','Search by item or month…', [['All Confidence','High','Medium','Low'],['All Status','Draft','Pending Approval','Approved']],
+      '<button class="btn btn-secondary btn-sm">'+ic('download')+'Export</button><button class="btn btn-primary btn-sm" onclick="modalNewSalesForecast()">'+ic('plus')+'New Forecast</button>')+
+    registerTable('salesf', ['Item','Month','Forecast Qty','Actual (Last Month)','Confidence','Status'], SALES_FORECAST, function(s){
+      return {cells:[entCell(s.name, s.item), s.month, s.forecastQty, s.actualLastMonth==null?'—':s.actualLastMonth, chip(s.confidence), badgeFor(s.status)], onclick:"openForecastDrawer('"+s.item+"','"+s.month+"')"};
+    }, {numCols:[2,3]}) + pager(SALES_FORECAST.length, SALES_FORECAST.length) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="dm-season"><div class="table-wrap">'+
+    tableHtml(['Item','Season','Seasonal Index','Peak Month','Status'], SEASONAL_FORECAST.map(function(s){return [s.name, s.season, s.seasonalIndex, s.peakMonth, badgeFor(s.status)];}), {numCols:[2]}) + '</div></div>';
+  return html;
+}
+function openForecastDrawer(itemCode, month){
+  const s = SALES_FORECAST.find(function(x){return x.item===itemCode && x.month===month;}); if(!s) return;
+  let extra = '';
+  if(s.status==='Pending Approval') extra = '<div class="section-title">Approval Status</div>'+approvalStepperHtml(['Prepared by Demand Planner','Reviewed by Sales','Approved by Supply Chain Manager'], 'Reviewed by Sales');
+  openDrawer(s.name, s.month, [
+    ['Item', s.name], ['Month', s.month], ['Forecast Qty', s.forecastQty], ['Actual (Last Month)', s.actualLastMonth==null?'—':s.actualLastMonth], ['Confidence', chip(s.confidence)], ['Status', badgeFor(s.status)]
+  ], {extra: extra, footBtns: s.status==='Pending Approval' ? '<button class="btn btn-danger" onclick="closeDrawer();toast(&quot;Forecast sent back for revision.&quot;)">'+ic('x')+'Reject</button><button class="btn btn-primary" onclick="closeDrawer();toast(&quot;Forecast approved and passed to MRP.&quot;)">'+ic('check')+'Approve</button>' : '<button class="btn btn-secondary" onclick="closeDrawer();">'+ic('edit')+'Edit Forecast</button>'});
+}
+function modalNewSalesForecast(){
+  openModal('New Sales Forecast', '<div class="form-grid">'+
+    field('Item','select',ITEMS.filter(function(i){return i.type==='Finished Good';}).map(function(i){return i.name;}))+
+    field('Forecast Month','date')+field('Forecast Model','select',FORECAST_MODELS.map(function(m){return m.name;}))+
+    field('Forecast Qty','number',30)+field('Confidence','select',['High','Medium','Low'])+
+    '</div>',
+    '<button class="btn btn-secondary" onclick="closeModal()">Save as Draft</button><button class="btn btn-primary" onclick="closeModal();toast(&quot;Sales forecast submitted for approval.&quot;)">'+ic('check')+'Submit for Approval</button>'
+  );
+}
+/* ============================= VIEW: MRP ============================= */
+function viewMRP(){
+  let html = pageHeader('Material Requirement Planning (MRP)', 'MRP runs, material shortages, and suggested purchase/manufacturing orders for '+CURRENT_COMPANY+'.',
+    '<button class="btn btn-secondary">'+ic('download')+'Export</button><button class="btn btn-primary" onclick="modalRunMRP()">'+ic('refresh')+'Run MRP</button>');
+  html += tabbar([
+    {id:'mrp-run', label:'MRP Run'}, {id:'mrp-short', label:'Material Shortage'}, {id:'mrp-pur', label:'Suggested Purchase'}, {id:'mrp-mfg', label:'Suggested Manufacturing'}
+  ], 'mrp') + '</div>';
+
+  html += '<div class="tabpanel active" data-tab="mrp-run"><div class="table-wrap">'+
+    registerTable('mrprun', ['Run Code','Date','Planning Horizon','Items Planned','Shortages Found','Status'], MRP_RUNS, function(m){
+      return {cells:[m.code, m.date, m.horizon, m.itemsPlanned, m.shortagesFound, badgeFor(m.status)], onclick:"openMRPRunDrawer('"+m.code+"')"};
+    }, {numCols:[3,4]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="mrp-short"><div class="table-wrap">'+
+    toolbar('short','Search by item…', [['All Status','Open','Purchase Raised']],
+      '<button class="btn btn-secondary btn-sm">'+ic('download')+'Export</button>')+
+    registerTable('short', ['Item','Required','Available','Shortfall','Needed By','Status'], MATERIAL_SHORTAGE, function(m){
+      return {cells:[entCell(m.name, m.item), fmtNum(m.required), fmtNum(m.available), '<span style="color:var(--red);font-weight:700;">'+fmtNum(m.shortfall)+'</span>', m.neededBy, badgeFor(m.status)], onclick:"toast('Shortage detail — "+m.name+"')"};
+    }, {numCols:[2,3,4]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="mrp-pur"><div class="table-wrap">'+
+    '<div class="table-toolbar"><div class="grow"></div><button class="btn btn-secondary btn-sm" onclick="toast(&quot;2 suggestions selected for bulk approval.&quot;)">'+ic('check')+'Bulk Approve</button></div>'+
+    registerTable('sugpur', ['Item','Suggested Qty','Vendor','Est. Cost','Required By','Status'], SUGGESTED_PURCHASE, function(s){
+      return {cells:[entCell(s.name, s.item), fmtNum(s.qty), s.vendor, fmtINR(s.estCost), s.requiredBy, badgeFor(s.status)], onclick:"openSuggestedPurchaseDrawer('"+s.item+"')"};
+    }, {numCols:[1,3]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="mrp-mfg"><div class="table-wrap">'+
+    registerTable('sugmfg', ['Item','Suggested Qty','Due Date','Work Center','Status'], SUGGESTED_MANUFACTURING, function(s){
+      return {cells:[entCell(s.name, s.item), fmtNum(s.qty), s.dueDate, s.workCenter, badgeFor(s.status)], onclick:"openSuggestedMfgDrawer('"+s.item+"')"};
+    }, {numCols:[1]}) + '</div></div>';
+  return html;
+}
+function openMRPRunDrawer(code){
+  const m = MRP_RUNS.find(function(x){return x.code===code;}); if(!m) return;
+  let extra = '<div class="section-title">MRP Lifecycle</div>'+approvalStepperHtml(['Demand Consolidated','Material Netting Complete','Shortages Identified','Suggestions Generated'], m.status==='Running'?'Material Netting Complete':'Suggestions Generated');
+  openDrawer(m.code, m.horizon, [
+    ['Run Date', m.date], ['Planning Horizon', m.horizon], ['Items Planned', m.itemsPlanned], ['Shortages Found', m.shortagesFound], ['Status', badgeFor(m.status)]
+  ], {extra: extra, footBtns:'<button class="btn btn-secondary" onclick="closeDrawer();showView(&quot;mrp&quot;);">'+ic('eye')+'View Shortages</button><button class="btn btn-primary" onclick="closeDrawer();toast(&quot;Re-running MRP with latest demand and inventory data.&quot;)">'+ic('refresh')+'Re-run MRP</button>'});
+}
+function openSuggestedPurchaseDrawer(itemCode){
+  const s = SUGGESTED_PURCHASE.find(function(x){return x.item===itemCode;}); if(!s) return;
+  let extra = '';
+  if(s.status==='Pending Approval') extra = '<div class="section-title">Approval Status</div>'+approvalStepperHtml(['Suggested by MRP','Reviewed by Materials Planner','Approved by Procurement'], 'Reviewed by Materials Planner');
+  openDrawer(s.name, 'Suggested Purchase', [
+    ['Item', s.name], ['Suggested Qty', s.qty], ['Vendor', s.vendor], ['Estimated Cost', fmtINR(s.estCost)], ['Required By', s.requiredBy], ['Status', badgeFor(s.status)]
+  ], {extra: extra, footBtns: s.status==='Pending Approval' ? '<button class="btn btn-danger" onclick="closeDrawer();toast(&quot;Suggestion rejected.&quot;)">'+ic('x')+'Reject</button><button class="btn btn-primary" onclick="closeDrawer();toast(&quot;Purchase suggestion approved and converted to purchase order.&quot;)">'+ic('check')+'Approve & Create PO</button>' : '<button class="btn btn-secondary" onclick="closeDrawer();">'+ic('eye')+'View Purchase Order</button>'});
+}
+function openSuggestedMfgDrawer(itemCode){
+  const s = SUGGESTED_MANUFACTURING.find(function(x){return x.item===itemCode;}); if(!s) return;
+  let extra = '';
+  if(s.status==='Pending Approval') extra = '<div class="section-title">Approval Status</div>'+approvalStepperHtml(['Suggested by MRP','Reviewed by Production Planner','Approved — Work Order Created'], 'Reviewed by Production Planner');
+  openDrawer(s.name, 'Suggested Manufacturing', [
+    ['Item', s.name], ['Suggested Qty', s.qty], ['Due Date', s.dueDate], ['Work Center', s.workCenter], ['Status', badgeFor(s.status)]
+  ], {extra: extra, footBtns: s.status==='Pending Approval' ? '<button class="btn btn-danger" onclick="closeDrawer();toast(&quot;Suggestion rejected.&quot;)">'+ic('x')+'Reject</button><button class="btn btn-primary" onclick="closeDrawer();toast(&quot;Manufacturing suggestion approved and work order created.&quot;)">'+ic('check')+'Approve & Create Work Order</button>' : '<button class="btn btn-secondary" onclick="closeDrawer();">'+ic('eye')+'View Work Order</button>'});
+}
+function modalRunMRP(){
+  openModal('Run MRP', '<div class="form-grid">'+
+    field('Planning Horizon Start','date')+field('Planning Horizon End','date')+field('Plant','select',PLANTS)+
+    field('Include Safety Stock','select',['Yes','No'])+field('Demand Source','select',['Sales Forecast + Confirmed Orders','Confirmed Orders Only'])+
+    '</div>',
+    '<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal();toast(&quot;MRP run started. Results will populate shortages and suggestions shortly.&quot;)">'+ic('refresh')+'Run MRP</button>'
+  );
+}
+
+/* ============================= VIEW: MPS ============================= */
+function viewMPS(){
+  let html = pageHeader('Master Production Scheduling (MPS)', 'Firmed production quantities by item and period, reconciling demand forecast against existing orders for '+CURRENT_COMPANY+'.',
+    '<button class="btn btn-secondary">'+ic('download')+'Export</button><button class="btn btn-primary" onclick="modalNewMPS()">'+ic('plus')+'New MPS Entry</button>');
+  html += '<div class="table-wrap">'+
+    toolbar('mps','Search by item or period…', [['All Status','Draft','Pending Approval','Firmed']],
+      '<button class="btn btn-secondary btn-sm">'+ic('download')+'Export</button><button class="btn btn-primary btn-sm" onclick="modalNewMPS()">'+ic('plus')+'New MPS Entry</button>')+
+    registerTable('mps', ['Item','Period','Demand Forecast','Existing Orders','MPS Qty','Status'], MPS_PLANS, function(m){
+      return {cells:[entCell(m.name, m.item), m.period, m.demandForecast, m.existingOrders, '<b>'+m.mpsQty+'</b>', badgeFor(m.status)], onclick:"openMPSDrawer('"+m.item+"','"+m.period+"')"};
+    }, {numCols:[2,3,4]}) + pager(MPS_PLANS.length, MPS_PLANS.length) + '</div>';
+  return html;
+}
+function openMPSDrawer(itemCode, period){
+  const m = MPS_PLANS.find(function(x){return x.item===itemCode && x.period===period;}); if(!m) return;
+  let extra = '<div class="section-title">Demand vs Supply</div>'+kv([['Demand Forecast', m.demandForecast],['Existing Confirmed Orders', m.existingOrders],['MPS Quantity (Firmed)', m.mpsQty]]);
+  if(m.status==='Pending Approval') extra += '<div class="section-title">Approval Status</div>'+approvalStepperHtml(['Prepared by Scheduler','Reviewed by Production Planner','Firmed by Supply Chain Manager'], 'Reviewed by Production Planner');
+  openDrawer(m.name, m.period, [
+    ['Item', m.name], ['Period', m.period], ['MPS Quantity', m.mpsQty], ['Status', badgeFor(m.status)]
+  ], {extra: extra, footBtns: m.status==='Pending Approval' ? '<button class="btn btn-danger" onclick="closeDrawer();toast(&quot;MPS entry sent back for revision.&quot;)">'+ic('x')+'Reject</button><button class="btn btn-primary" onclick="closeDrawer();toast(&quot;MPS firmed. Work orders can now be created.&quot;)">'+ic('check')+'Firm MPS</button>' : '<button class="btn btn-secondary" onclick="closeDrawer();">'+ic('edit')+'Edit</button><button class="btn btn-secondary" onclick="closeDrawer();showView(&quot;scheduling&quot;);">'+ic('calendar')+'View Schedule</button>'});
+}
+function modalNewMPS(){
+  openModal('New MPS Entry', '<div class="form-grid">'+
+    field('Item','select',ITEMS.filter(function(i){return i.type==='Finished Good';}).map(function(i){return i.name;}))+
+    field('Period','date')+field('Demand Forecast Qty','number',30)+field('Existing Confirmed Orders','number',0)+field('MPS Quantity','number',30)+
+    '</div>',
+    '<button class="btn btn-secondary" onclick="closeModal()">Save as Draft</button><button class="btn btn-primary" onclick="closeModal();toast(&quot;MPS entry submitted for approval.&quot;)">'+ic('check')+'Submit for Approval</button>'
+  );
+}
+/* ============================= VIEW: CAPACITY PLANNING ============================= */
+function viewCapacity(){
+  let html = pageHeader('Capacity Planning', 'Machine capacity, work center capacity and resource planning for '+CURRENT_COMPANY+'.', '<button class="btn btn-secondary">'+ic('download')+'Export</button>');
+  html += tabbar([
+    {id:'cap-mac', label:'Machine Capacity'}, {id:'cap-wc', label:'Work Center Capacity'}, {id:'cap-res', label:'Resource Planning'}
+  ], 'cap') + '</div>';
+
+  html += '<div class="tabpanel active" data-tab="cap-mac"><div class="table-wrap">'+
+    tableHtml(['Machine','Work Center','Available Hrs/Week','Planned Hrs/Week','Utilization'], MACHINE_CAPACITY.map(function(m){
+      return [m.machine, m.workCenter, m.availableHrsWeek, m.plannedHrsWeek, '<div class="progress" style="width:100px;"><span class="'+(m.utilPct>85?'bad':(m.utilPct>70?'warn':''))+'" style="width:'+m.utilPct+'%;"></span></div> '+m.utilPct+'%'];
+    }), {numCols:[2,3]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="cap-wc"><div class="table-wrap card-pad">'+
+    '<div class="bars">'+WORK_CENTER_CAPACITY.map(function(w){
+      const pct = Math.round(w.plannedHrsWeek/w.availableHrsWeek*100);
+      return '<div class="bar-col"><div style="width:100%;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;"><div class="bar" style="height:'+pct+'%;'+(pct>90?'background:var(--red);':(pct>75?'background:var(--amber);':''))+'"></div></div><div class="lbl">'+w.workCenter.split(' ').slice(0,2).join(' ')+'</div></div>';
+    }).join('')+'</div></div>'+
+    '<div class="table-wrap" style="margin-top:16px;">'+tableHtml(['Work Center','Plant','Available Hrs/Week','Planned Hrs/Week','Free Hrs','Status'], WORK_CENTER_CAPACITY.map(function(w){
+      return [w.workCenter, w.plant, w.availableHrsWeek, w.plannedHrsWeek, w.freeHrs, badgeFor(w.status)];
+    }), {numCols:[2,3,4]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="cap-res"><div class="table-wrap">'+
+    '<div class="table-toolbar"><div class="grow"></div><button class="btn btn-primary btn-sm" onclick="toast(&quot;Resource request raised to HR.&quot;)">'+ic('plus')+'Raise Staffing Request</button></div>'+
+    tableHtml(['Resource Type','Work Center','Required','Available','Gap','Status'], RESOURCE_PLANNING.map(function(r){
+      return [r.resource, r.workCenter, r.required, r.available, r.gap? '<span style="color:var(--red);font-weight:700;">'+r.gap+'</span>':'0', badgeFor(r.status)];
+    }), {numCols:[2,3,4]}) + '</div></div>';
+  return html;
+}
+
+/* ============================= VIEW: PROCUREMENT PLANNING ============================= */
+function viewProcurement(){
+  let html = pageHeader('Procurement Planning', 'Purchase suggestions and vendor planning aligned to MRP outputs for '+CURRENT_COMPANY+'.',
+    '<button class="btn btn-secondary">'+ic('download')+'Export</button><button class="btn btn-primary" onclick="modalNewPurchaseSuggestion()">'+ic('plus')+'New Purchase Suggestion</button>');
+  html += tabbar([
+    {id:'pc-sug', label:'Purchase Suggestions'}, {id:'pc-ven', label:'Vendor Planning'}
+  ], 'pc') + '</div>';
+
+  html += '<div class="tabpanel active" data-tab="pc-sug"><div class="table-wrap">'+
+    toolbar('pcsug','Search by item or vendor…', [['All Status','Pending Approval','Approved']],
+      '<button class="btn btn-secondary btn-sm">'+ic('download')+'Export</button><button class="btn btn-secondary btn-sm" onclick="toast(&quot;2 suggestions selected for bulk approval.&quot;)">'+ic('check')+'Bulk Approve</button>')+
+    registerTable('pcsug', ['Item','Suggested Qty','Vendor','Est. Cost','Required By','Status'], PURCHASE_SUGGESTIONS, function(s){
+      return {cells:[entCell(s.name, s.item), fmtNum(s.qty), s.vendor, fmtINR(s.estCost), s.requiredBy, badgeFor(s.status)], onclick:"openSuggestedPurchaseDrawer('"+s.item+"')"};
+    }, {numCols:[1,3]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="pc-ven"><div class="table-wrap">'+
+    tableHtml(['Vendor','Category','Planned Orders','Avg Lead Time (Days)','On-Time %','Status'], VENDOR_PLANNING.map(function(v){
+      return [entCell(v.vendor, v.category), v.category, v.plannedOrders, v.leadTime, v.onTimePct+'%', badgeFor(v.status)];
+    }), {numCols:[2,3,4]}) + '</div></div>';
+  return html;
+}
+function modalNewPurchaseSuggestion(){
+  openModal('New Purchase Suggestion', '<div class="form-grid">'+
+    field('Item','select',ITEMS.filter(function(i){return i.type!=='Finished Good';}).map(function(i){return i.name;}))+
+    field('Suggested Qty','number',100)+field('Vendor','select',VENDORS.map(function(v){return v.name;}))+field('Required By','date')+
+    '</div>',
+    '<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal();toast(&quot;Purchase suggestion created and awaiting approval.&quot;)">'+ic('check')+'Save Suggestion</button>'
+  );
+}
+/* ============================= VIEW: PRODUCTION SCHEDULING ============================= */
+function viewScheduling(){
+  let html = pageHeader('Production Scheduling', 'Daily, weekly and monthly production schedules for '+CURRENT_COMPANY+'.',
+    '<button class="btn btn-secondary">'+ic('download')+'Export</button><button class="btn btn-primary" onclick="modalNewSchedule()">'+ic('plus')+'New Schedule Entry</button>');
+  html += tabbar([
+    {id:'sch-day', label:'Daily Schedule'}, {id:'sch-week', label:'Weekly Schedule'}, {id:'sch-month', label:'Monthly Schedule'}
+  ], 'sch') + '</div>';
+
+  html += '<div class="tabpanel active" data-tab="sch-day"><div class="table-wrap">'+
+    tableHtml(['Date','Work Order','Item','Work Center','Qty','Shift','Status'], DAILY_SCHEDULE.map(function(d){
+      return [d.date, d.workOrder, d.item, d.workCenter, d.qty, d.shift, badgeFor(d.status)];
+    }), {numCols:[4]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="sch-week"><div class="table-wrap">'+
+    tableHtml(['Week','Work Orders','Total Qty','Work Centers','Status'], WEEKLY_SCHEDULE.map(function(w){
+      return [w.week, w.workOrders, w.totalQty, w.workCenters, badgeFor(w.status)];
+    }), {numCols:[1,2]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="sch-month"><div class="table-wrap">'+
+    tableHtml(['Month','Planned Work Orders','Planned Qty','Capacity Utilization','Status'], MONTHLY_SCHEDULE.map(function(m){
+      return [m.month, m.plannedWorkOrders, m.plannedQty, '<div class="progress" style="width:100px;"><span class="'+(m.capacityUtil>85?'bad':(m.capacityUtil>70?'warn':''))+'" style="width:'+m.capacityUtil+'%;"></span></div> '+m.capacityUtil+'%', badgeFor(m.status)];
+    }), {numCols:[1,2]}) + '</div></div>';
+  return html;
+}
+function modalNewSchedule(){
+  openModal('New Schedule Entry', '<div class="form-grid">'+
+    field('Work Order','select',['WO-8841 — Industrial Blower Unit','WO-8842 — Precision Gearbox Unit','WO-8843 — Hydraulic Actuator'])+
+    field('Work Center','select',['CNC Turning Center 1','CNC Milling Center 1','Welding Bay 1','Assembly Line 1','Assembly Line 2'])+
+    field('Scheduled Date','date')+field('Shift','select',['Shift A (06:00–14:00)','Shift B (14:00–22:00)','Shift C (22:00–06:00)'])+field('Quantity','number',10)+
+    '</div>',
+    '<button class="btn btn-secondary" onclick="closeModal()">Cancel</button><button class="btn btn-primary" onclick="closeModal();toast(&quot;Schedule entry created.&quot;)">'+ic('check')+'Save Schedule</button>'
+  );
+}
+
+/* ============================= VIEW: PLANNING CALENDAR ============================= */
+function viewPlanCal(){
+  let html = pageHeader('Planning Calendar', 'Consolidated calendar of MRP runs, schedules, shortages and procurement deadlines for '+CURRENT_COMPANY+'.', '<button class="btn btn-secondary">'+ic('refresh')+'Refresh</button>');
+  // Build a simple July 2026 month grid (July 1 2026 is a Wednesday)
+  const dow = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let html2 = '<div class="grid g-7" style="margin-bottom:6px;">'+dow.map(function(d){return '<div class="cal-dow">'+d+'</div>';}).join('')+'</div>';
+  html2 += '<div class="grid g-7">';
+  const leadBlank = 3; // Jul 1 2026 = Wednesday -> 3 blanks (Sun,Mon,Tue)
+  for(let i=0;i<leadBlank;i++) html2 += '<div></div>';
+  for(let day=1; day<=31; day++){
+    const dateStr = '2026-07-'+String(day).padStart(2,'0');
+    const evts = PLANNING_CALENDAR_EVENTS.filter(function(e){return e.date===dateStr;});
+    html2 += '<div class="cal-day'+(day===15?' today':'')+'"><div class="dnum">'+day+'</div>'+
+      evts.map(function(e){
+        const cls = e.type==='Shortage'?'crit':(e.type==='Capacity'?'warn':'');
+        return '<div class="cal-evt '+cls+'" onclick="toast(&quot;'+e.event.replace(/'/g,"\\'").replace(/"/g,'&quot;')+'&quot;)">'+e.event+'</div>';
+      }).join('') + '</div>';
+  }
+  html2 += '</div>';
+  html += '<div class="card card-pad">'+html2+'</div>';
+  html += '<div class="section-title">Upcoming Events List</div><div class="table-wrap">'+
+    tableHtml(['Date','Event','Type'], PLANNING_CALENDAR_EVENTS.map(function(e){return [e.date, e.event, chip(e.type)];})) + '</div>';
+  return html;
+}
+
+/* ============================= VIEW: EXCEPTION MANAGEMENT ============================= */
+function viewExceptions(){
+  let html = pageHeader('Exception Management', 'Planning exceptions requiring review — shortages, capacity breaches, late deliveries and forecast deviations for '+CURRENT_COMPANY+'.', '<button class="btn btn-secondary">'+ic('download')+'Export</button>');
+  html += '<div class="table-wrap">'+
+    toolbar('exc','Search exceptions…', [['All Types','Material Shortage','Capacity Overload','Late Vendor Delivery','Forecast Deviation','Work Order Delay','Resource Gap'],['All Severity','High','Medium','Low'],['All Status','Open','Under Review','Resolved']])+
+    registerTable('exc', ['Exception','Type','Entity','Detail','Severity','Status'], EXCEPTIONS, function(e){
+      return {cells:[e.code, chip(e.type), e.entity, e.detail, badgeFor(e.severity), badgeFor(e.status)], onclick:"openExceptionDrawer('"+e.code+"')"};
+    }) + '</div>';
+  return html;
+}
+function openExceptionDrawer(code){
+  const e = EXCEPTIONS.find(function(x){return x.code===code;}); if(!e) return;
+  openDrawer(e.code, e.type, [
+    ['Type', e.type], ['Entity', e.entity], ['Detail', e.detail], ['Severity', badgeFor(e.severity)], ['Status', badgeFor(e.status)]
+  ], {footBtns: e.status!=='Resolved' ? '<button class="btn btn-secondary" onclick="closeDrawer();toast(&quot;Marked under review.&quot;)">'+ic('eye')+'Mark Under Review</button><button class="btn btn-primary" onclick="closeDrawer();toast(&quot;Exception resolved.&quot;)">'+ic('check')+'Resolve</button>' : '<button class="btn btn-secondary" onclick="closeDrawer();">'+ic('eye')+'View History</button>'});
+}
+
+/* ============================= VIEW: PLANNING REPORTS ============================= */
+function viewReports(){
+  let html = pageHeader('Planning Reports', 'Demand vs supply, material shortage, capacity utilization and procurement plan reports for '+CURRENT_COMPANY+'.', '<button class="btn btn-secondary">'+ic('download')+'Export All</button>');
+  html += tabbar([
+    {id:'rp-ds', label:'Demand vs Supply'}, {id:'rp-short', label:'Material Shortage'}, {id:'rp-cap', label:'Capacity Utilization'}, {id:'rp-proc', label:'Procurement Plan'}
+  ], 'rp') + '</div>';
+
+  html += '<div class="tabpanel active" data-tab="rp-ds"><div class="table-wrap">'+
+    tableHtml(['Item','Period','Demand Forecast','MPS Supply Qty','Variance'], MPS_PLANS.map(function(m){
+      const v = m.mpsQty-m.demandForecast;
+      return [m.name, m.period, m.demandForecast, m.mpsQty, (v>=0? '<span style="color:var(--green);font-weight:700;">+'+v+'</span>' : '<span style="color:var(--red);font-weight:700;">'+v+'</span>')];
+    }), {numCols:[2,3,4]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="rp-short"><div class="table-wrap">'+
+    tableHtml(['Item','Required','Available','Shortfall','Needed By','Status'], MATERIAL_SHORTAGE.map(function(m){
+      return [m.name, fmtNum(m.required), fmtNum(m.available), fmtNum(m.shortfall), m.neededBy, badgeFor(m.status)];
+    }), {numCols:[1,2,3]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="rp-cap"><div class="table-wrap">'+
+    tableHtml(['Work Center','Available Hrs/Week','Planned Hrs/Week','Utilization %','Status'], WORK_CENTER_CAPACITY.map(function(w){
+      const pct = Math.round(w.plannedHrsWeek/w.availableHrsWeek*100);
+      return [w.workCenter, w.availableHrsWeek, w.plannedHrsWeek, pct+'%', badgeFor(w.status)];
+    }), {numCols:[1,2]}) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="rp-proc"><div class="table-wrap">'+
+    tableHtml(['Item','Suggested Qty','Vendor','Est. Cost','Required By','Status'], PURCHASE_SUGGESTIONS.map(function(s){
+      return [s.name, fmtNum(s.qty), s.vendor, fmtINR(s.estCost), s.requiredBy, badgeFor(s.status)];
+    }), {numCols:[1,3]}) + '</div></div>';
+  return html;
+}
+/* ============================= VIEW: ADMINISTRATION ============================= */
+function viewAdmin(){
+  let html = pageHeader('Administration', 'Roles & permissions, audit logs and company/plant configuration.', '');
+  html += tabbar([
+    {id:'ad-rbac', label:'Roles & Permissions'}, {id:'ad-audit', label:'Audit Logs'}, {id:'ad-org', label:'Company & Plants'}
+  ], 'ad') + '</div>';
+
+  html += '<div class="tabpanel active" data-tab="ad-rbac"><div class="hstack" style="margin-bottom:12px;"><span class="muted" style="font-size:12px;">Access levels: N = No Access &middot; V = View Only &middot; E = Edit / Manage &middot; A = Full Admin</span>'+
+    '<button class="btn btn-secondary btn-sm" style="margin-left:auto;">'+ic('plus')+'Custom Role</button></div>'+
+    '<div class="table-wrap"><table><thead><tr><th>Role</th>'+RBAC_COLS.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr></thead><tbody>'+
+    RBAC_MATRIX.map(function(r){ return '<tr><td><b>'+r.role+'</b></td>'+r.vals.map(function(v){return '<td><span class="perm-pill" style="background:'+({A:'var(--green-bg)',E:'var(--blue-50)',V:'var(--amber-bg)',N:'var(--bg)'}[v])+';color:'+({A:'var(--green)',E:'var(--blue-600)',V:'var(--amber)',N:'var(--text-faint)'}[v])+';">'+v+'</span></td>';}).join('')+'</tr>'; }).join('')+
+    '</tbody></table></div></div>';
+
+  html += '<div class="tabpanel" data-tab="ad-audit"><div class="table-wrap">'+
+    toolbar('audit','Search audit logs…', [['All Modules','Demand Forecasting','MRP','MPS','Capacity Planning','Procurement Planning','Production Scheduling','Exception Management']])+
+    registerTable('audit', ['Timestamp','Actor','Action','Entity','Module','IP Address'], AUDIT_LOGS, function(a){
+      return {cells:[a.ts, a.actor, a.action, a.entity, chip(a.module), a.ip], onclick:"toast('Audit entry — "+a.action+"')"};
+    }) + '</div></div>';
+
+  html += '<div class="tabpanel" data-tab="ad-org"><div class="grid g-2">'+
+    '<div class="card card-pad"><h3 class="mt-0" style="margin-bottom:14px;">Companies</h3>'+tableHtml(['Company','Base Currency'], COMPANIES.map(function(c,i){return [c, i===0?'INR':(i===1?'USD':'AED')];}))+'</div>'+
+    '<div class="card card-pad"><h3 class="mt-0" style="margin-bottom:14px;">Plants</h3>'+tableHtml(['Plant'], PLANTS.map(function(p){return [p];}))+'</div>'+
+    '</div></div>';
+  return html;
+}
+
+/* ============================= INIT ============================= */
+const VIEW_RENDERERS = {
+  workspace: viewWorkspace, demand: viewDemand, mrp: viewMRP, mps: viewMPS, capacity: viewCapacity,
+  procurement: viewProcurement, scheduling: viewScheduling, plancal: viewPlanCal, exceptions: viewExceptions,
+  reports: viewReports, admin: viewAdmin
+};
+function renderAllViews(){
+  let html = '';
+  Object.keys(VIEW_RENDERERS).forEach(function(id){
+    html += '<section class="view" id="view-'+id+'"><div class="page">'+VIEW_RENDERERS[id]()+'</div></section>';
+  });
+  document.getElementById('view-root').innerHTML = html;
+  initTabs(document); initAccordions(document);
+}
+function initApp(){
+  renderSidebar();
+  renderTopbar();
+  renderAllViews();
+  showView('workspace');
+}
+document.addEventListener('DOMContentLoaded', initApp);
+</script>
+</body>
+</html>
